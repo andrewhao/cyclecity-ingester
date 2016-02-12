@@ -1,5 +1,22 @@
-# webpack-express-boilerplate
-A boilerplate for running a Webpack workflow in Node express
+# Velocitas Reporter
+
+A cycle commute report digester.
+
+## Pseudocode
+
+1. for each strava account
+2. query for new commutes
+3. for new commutes
+   - flag as new
+   - grab & save streaming data
+   - send to stoplight framework
+   - generate list of stops
+   - reverse geocode
+   - assemble report
+   - save report
+   - email
+
+## Webpack-express notes
 
 Please read the following article: [The ultimate Webpack setup](http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup) to know more about this boilerplate.
 
