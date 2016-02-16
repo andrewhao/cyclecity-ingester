@@ -45,6 +45,7 @@ router.get('/ingest', (req, res, next) => {
   // - For commutes without reports
   // - generate report
   // - save report
+  console.log("Ingesting...");
 });
 
 router.get('/send', (req, res, next) => {
