@@ -1,4 +1,5 @@
 /* eslint no-console: 0 */
+require('dotenv').config();
 
 import path from 'path';
 import express from 'express';
@@ -6,8 +7,8 @@ import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import config from './webpack.config.js';
+import apiRouter from './api/router';
 
-require('dotenv').config();
 
 const isDeveloping = process.env.NODE_ENV !== 'production';
 const port = isDeveloping ? 3000 : process.env.PORT;
@@ -30,12 +31,13 @@ if (isDeveloping) {
 
   app.use(middleware);
   app.use(webpackHotMiddleware(compiler));
-  app.use('/api', require('./api/router').default);
+  app.use('/api', apiRouter);
   app.get('*', function response(req, res) {
     res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
     res.end();
   });
 } else {
+  app.use('/api', apiRouter);
   app.use(express.static(__dirname + '/dist'));
   app.get('*', function response(req, res) {
     res.sendFile(path.join(__dirname, 'dist/index.html'));
