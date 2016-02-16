@@ -19,7 +19,6 @@ router.get('/streams', (req, res, next) => {
     const latlngData = _.find(data, { type: 'latlng' }).data;
     const distanceData = _.find(data, { type: 'distance' }).data;
     const velocityData = _.find(data, { type: 'velocity_smooth' }).data;
-    console.log(timeData);
     const zipped = _.zipWith(timeData,
                              latlngData,
                              distanceData,
