@@ -34,8 +34,8 @@ router.post('/synchronization', (req, res, next) => {
   .then(() => res.status(202).end());
 });
 
-router.get('/latestActivityStoplights', (req, res, next) => {
-  strava.latestActivityZipped().then((zipped) => {
+router.get('/activities/:id/stoplights', (req, res, next) => {
+  strava.activityZipped(req.params.id).then((zipped) => {
     return findStoplights(zipped)
   })
   .then((stoplights) => {
@@ -44,11 +44,12 @@ router.get('/latestActivityStoplights', (req, res, next) => {
   .catch((err) => res.send(err));
 });
 
-router.get('/stravaStreams', (req, res, next) => {
+router.get('/activities/:id/stream', (req, res, next) => {
   // - Hit Strava API
   // - Query for list of commutes
   // - Save new commutes (id, streamdata) in db
-  strava.latestActivityZipped().then((data) => {
+  const id = req.params.id
+  strava.activityZipped(id).then((data) => {
     res.send(data);
   })
   .catch((err) => res.send(err));
