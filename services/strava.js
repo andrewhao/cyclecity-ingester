@@ -10,8 +10,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default class StravaService {
-  latestActivityZipped() {
-    return this.latestActivityStream().then((data) => {
+  activityZipped(id) {
+    return this.activityStream(id).then((data) => {
       const timeData = _.find(data, { type: 'time' }).data;
       const latlngData = _.find(data, { type: 'latlng' }).data;
       const distanceData = _.find(data, { type: 'distance' }).data;
@@ -43,21 +43,16 @@ export default class StravaService {
     });
   }
 
-  latestActivityStream() {
-    return this.activities()
-    .then((pay) => {
-      const activity = pay[0]
-      return new Promise((resolve, reject) => {
-        const stream = strava.streams.activity({
-          id: activity.id,
-          types: 'latlng,time,velocity_smooth',
-          resolution: 'high'
-        }, (err, data) => {
-          if (!err) { resolve(data); }
-          else { reject(err) }
-        });
+  activityStream(activityId) {
+    return new Promise((resolve, reject) => {
+      const stream = strava.streams.activity({
+        id: activityId,
+        types: 'latlng,time,velocity_smooth',
+        resolution: 'high'
+      }, (err, data) => {
+        if (!err) { resolve(data); }
+        else { reject(err) }
       });
-    })
-    .catch((err) => console.log(err));
+    });
   }
 };
