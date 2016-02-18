@@ -19,15 +19,25 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/activities', (req, res, next) => {
-  Activity.find({}, (err, activities) => res.send(activities))
+  Activity.find({})
+  .sort({ activityId: 'desc' })
+  .then((activities) => res.send(activities))
 });
 
 router.post('/synchronization', (req, res, next) => {
   strava.activities().then((data) => {
     data.forEach((activity) => {
-      new Activity({ activityId: activity.id })
-      .save()
-      .catch((e) => console.log(`err: ${e}`))
+      Activity.findOneAndUpdate({
+        activityId: activity.id
+      }, {
+        name: activity.name,
+        type: activity.type,
+        commute: activity.commute,
+        raw: activity
+      }, {
+        upsert: true,
+        new: true
+      })
       .then((a) => console.log(`saved: ${a}`))
     });
   })
