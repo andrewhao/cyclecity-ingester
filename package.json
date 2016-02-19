@@ -34,7 +34,7 @@
     "passport-strava": "0.1.0",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
-    "stoplight": "0.0.4",
+    "stoplight": "0.0.5",
     "strava-v3": "1.10.0"
   },
   "devDependencies": {
