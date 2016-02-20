@@ -5,6 +5,7 @@ import { findStoplights } from '../services/stoplightFinder';
 import util from 'util';
 import mongoose from 'mongoose';
 import Activity from '../models/Activity';
+import synchronizeActivity from '../services/synchronizeActivity';
 
 const db = mongoose.connect(process.env.MONGOLAB_URI).connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -25,23 +26,11 @@ router.get('/activities', (req, res, next) => {
 });
 
 router.post('/synchronization', (req, res, next) => {
-  strava.activities().then((data) => {
-    data.forEach((activity) => {
-      Activity.findOneAndUpdate({
-        activityId: activity.id
-      }, {
-        name: activity.name,
-        type: activity.type,
-        commute: activity.commute,
-        raw: activity
-      }, {
-        upsert: true,
-        new: true
-      })
-      .then((a) => console.log(`saved: ${a}`))
-    });
-  })
-  .then(() => res.status(202).end());
+  synchronizeActivity(strava)
+  .then(() => res.status(202).end())
+  .catch((err) => {
+    res.status(500).send(err);
+  });
 });
 
 router.get('/activities/:id/stoplights', (req, res, next) => {
