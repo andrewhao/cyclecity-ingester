@@ -31,6 +31,11 @@ router.get('/reports', (req, res, next) => {
   .then((reports) => res.send(reports))
 });
 
+router.delete('/reports', (req, res, next) => {
+  Report.remove({})
+  .then(out => res.status(202).send(out))
+})
+
 router.post('/synchronization', (req, res, next) => {
   const savedStream = synchronizeActivity(strava)
   processNewActivities(savedStream, strava)

@@ -19,7 +19,7 @@ export default function processNewActivities(savedActivitiesStream, strava) {
     let [queryResult, activityId] = resultPair;
     if (queryResult === null) {
       return Observable.fromPromise(
-        strava.activityZipped(activityId)
+        generateStoplightReport(activityId, strava)
       )
       .zip(Observable.just(activityId))
     } else {
@@ -33,7 +33,10 @@ export default function processNewActivities(savedActivitiesStream, strava) {
         activityId: activityId,
       }, {
         report: report,
-      }, { new: true, upsert: true })
+      }, {
+        new: true,
+        upsert: true
+      })
     )
   })
   .tap(res => console.log(`+ New Report created: ${res}`))
