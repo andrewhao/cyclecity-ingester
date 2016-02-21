@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import StravaService from '../services/strava';
 import _ from 'lodash';
-import { findStoplights } from '../services/stoplightFinder';
 import util from 'util';
 import mongoose from 'mongoose';
 import Activity from '../models/Activity';
-
-const db = mongoose.connect(process.env.MONGOLAB_URI).connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log('Connected to mongo.'));
+import Report from '../models/Report';
+import findStoplights from '../services/findStoplights';
+import synchronizeActivity from '../services/synchronizeActivity';
+import processNewActivities from '../services/processNewActivities';
+import Promise from 'bluebird';
+import { db } from  '../initializers/mongoose';
 
 const strava = new StravaService();
 const router = new Router();
@@ -24,24 +25,24 @@ router.get('/activities', (req, res, next) => {
   .then((activities) => res.send(activities))
 });
 
+router.get('/reports', (req, res, next) => {
+  Report.find({})
+  .sort({ activityId: 'desc' })
+  .then((reports) => res.send(reports))
+});
+
+router.delete('/reports', (req, res, next) => {
+  Report.remove({})
+  .then(out => res.status(202).send(out))
+})
+
 router.post('/synchronization', (req, res, next) => {
-  strava.activities().then((data) => {
-    data.forEach((activity) => {
-      Activity.findOneAndUpdate({
-        activityId: activity.id
-      }, {
-        name: activity.name,
-        type: activity.type,
-        commute: activity.commute,
-        raw: activity
-      }, {
-        upsert: true,
-        new: true
-      })
-      .then((a) => console.log(`saved: ${a}`))
-    });
-  })
-  .then(() => res.status(202).end());
+  const savedStream = synchronizeActivity(strava)
+  processNewActivities(savedStream, strava)
+  .subscribe(
+    (report) => res.status(202).send(report),
+    (err) => res.status(500).send(err)
+  )
 });
 
 router.get('/activities/:id/stoplights', (req, res, next) => {
