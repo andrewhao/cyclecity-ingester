@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import StravaService from '../services/strava';
 import _ from 'lodash';
-import { findStoplights } from '../services/stoplightFinder';
 import util from 'util';
 import mongoose from 'mongoose';
 import Activity from '../models/Activity';
+import Report from '../models/Report';
+import findStoplights from '../services/findStoplights';
 import synchronizeActivity from '../services/synchronizeActivity';
-
-const db = mongoose.connect(process.env.MONGOLAB_URI).connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => console.log('Connected to mongo.'));
+import processNewActivities from '../services/processNewActivities';
+import Promise from 'bluebird';
+import { db } from  '../initializers/mongoose';
 
 const strava = new StravaService();
 const router = new Router();
@@ -25,12 +25,19 @@ router.get('/activities', (req, res, next) => {
   .then((activities) => res.send(activities))
 });
 
+router.get('/reports', (req, res, next) => {
+  Report.find({})
+  .sort({ activityId: 'desc' })
+  .then((reports) => res.send(reports))
+});
+
 router.post('/synchronization', (req, res, next) => {
-  synchronizeActivity(strava)
-  .then(() => res.status(202).end())
-  .catch((err) => {
-    res.status(500).send(err);
-  });
+  const savedStream = synchronizeActivity(strava)
+  processNewActivities(savedStream, strava)
+  .subscribe(
+    (report) => res.status(202).send(report),
+    (err) => res.status(500).send(err)
+  )
 });
 
 router.get('/activities/:id/stoplights', (req, res, next) => {

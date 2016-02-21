@@ -7,6 +7,7 @@ const activitySchema = Schema({
   name: String,
   type: String,
   commute: Boolean,
+  timestamps: Date,
 });
 
 export default mongoose.model('Activity', activitySchema);
