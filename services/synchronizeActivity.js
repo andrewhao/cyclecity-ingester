@@ -6,8 +6,8 @@ import util from 'util';
 /**
  * Synchronizes from Strava to our internal Activity db.
  */
-export default function synchronizeActivity(stravaService) {
-  return Observable.fromPromise(stravaService.activities())
+export default function synchronizeActivity(activities$) {
+  return activities$
   .flatMap(result => result)
   .map(activity => {
     return Activity.findOneAndUpdate({
