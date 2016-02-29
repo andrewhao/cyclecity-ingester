@@ -1,7 +1,6 @@
 import Activity from '../models/Activity';
 import { Observable } from 'rx';
-import RxNode from 'rx-node';
-import util from 'util';
+import { inspect } from 'util';
 
 /**
  * Synchronizes from Strava to our internal Activity db.
@@ -21,8 +20,9 @@ export default function synchronizeActivity(activities$) {
       upsert: true,
       new: true
     })
-    .stream()
   })
-  .flatMap(activityStream => RxNode.fromStream(activityStream))
-  .tap(r => console.log(`saved: ${util.inspect(r)}`))
+  .flatMap(query => {
+    return Observable.fromPromise(query)
+  })
+  .tap(r => console.log(`saved: ${inspect(r)}`))
 };
