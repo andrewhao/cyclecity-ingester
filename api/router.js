@@ -41,6 +41,7 @@ router.post('/synchronization', (req, res, next) => {
   const activities$ = Observable.fromPromise(strava.activities())
   const savedStream = synchronizeActivity(activities$)
   processNewActivities(savedStream, strava)
+  .toArray()
   .subscribe(
     (report) => res.status(202).send(report),
     (err) => res.status(500).send(err)

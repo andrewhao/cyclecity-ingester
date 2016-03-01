@@ -23,6 +23,7 @@ export default function processNewActivities(savedActivitiesStream, strava) {
       )
       .zip(Observable.just(activityId))
     } else {
+      console.log('Report exists. Skipping report generation...')
       return Observable.empty()
     }
   })
@@ -40,5 +41,4 @@ export default function processNewActivities(savedActivitiesStream, strava) {
     )
   })
   .tap(res => console.log(`+ New Report created: ${res}`))
-  .toArray()
 };
