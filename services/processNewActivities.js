@@ -4,9 +4,9 @@ import Report from '../models/Report';
 import RxNode from 'rx-node';
 import { inspect } from 'util';
 import StravaService from '../services/strava';
-import generateStoplightReport from '../services/generateStoplightReport';
+import generateStoplightReportService from '../services/generateStoplightReport';
 
-export default function processNewActivities(savedActivitiesStream, strava) {
+export default function processNewActivities(savedActivitiesStream, strava, generateStoplightReport=generateStoplightReportService) {
   return savedActivitiesStream
   .tap(v => console.log(`Processing activity ${v.activityId}...`))
   .flatMap(activity => {

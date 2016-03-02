@@ -25,6 +25,19 @@ describe('processNewActivities()', () => {
     distance: 0,
   };
 
+  let expectedOutput = [
+    { elapsedTime: 0,
+      lon: -118.490601,
+      lat: 34.015053,
+      velocity: 0 }
+  ];
+
+  const mockGenerateStoplightReport = () => {
+    return new Promise((resolve) => {
+      resolve(expectedOutput);
+    })
+  }
+
   const mockStrava = {
     activityZipped: (activityId) => {
       const out = (activityId === 1) ? [ event1, event1 ] : [ event2, event2 ]
@@ -35,14 +48,8 @@ describe('processNewActivities()', () => {
 
   it('takes activities from the source stream and saves a stoplight report', (done) => {
     let input = Observable.just(first)
-    let expectedOutput = [
-      { elapsedTime: 0,
-        lon: -118.490601,
-        lat: 34.015053,
-        velocity: 0 }
-    ];
 
-    processNewActivities(input, mockStrava)
+    processNewActivities(input, mockStrava, mockGenerateStoplightReport)
     .toArray()
     .subscribe(output => {
       expect(output.length).to.eq(1);
@@ -57,7 +64,7 @@ describe('processNewActivities()', () => {
     .save()
     .then((report) => {
       const input = Observable.just(first)
-      processNewActivities(input, mockStrava)
+      processNewActivities(input, mockStrava, mockGenerateStoplightReport)
       .toArray()
       .subscribe(v => {
         expect(v.length).to.eq(0)
@@ -68,14 +75,8 @@ describe('processNewActivities()', () => {
 
   it('processes multiple reports', (done) => {
     let input = Observable.fromArray([first, second])
-    let expectedOutput = [
-      { elapsedTime: 0,
-        lon: -118.490601,
-        lat: 34.015053,
-        velocity: 0 }
-    ];
 
-    processNewActivities(input, mockStrava)
+    processNewActivities(input, mockStrava, mockGenerateStoplightReport)
     .toArray()
     .subscribe(output => {
       expect(output.length).to.eq(2);
