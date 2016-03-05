@@ -8,6 +8,7 @@ import Report from '../models/Report';
 import findStoplights from '../services/findStoplights';
 import synchronizeActivity from '../services/synchronizeActivity';
 import processNewActivities from '../services/processNewActivities';
+import emailReport from '../services/emailReport';
 import Promise from 'bluebird';
 import { Observable } from 'rx';
 import { db } from  '../initializers/mongoose';
@@ -40,7 +41,9 @@ router.delete('/reports', (req, res, next) => {
 router.post('/synchronization', (req, res, next) => {
   const activities$ = Observable.fromPromise(strava.activities())
   const savedStream = synchronizeActivity(activities$)
-  processNewActivities(savedStream, strava)
+  const newReports = processNewActivities(savedStream, strava)
+  const newEmails = emailReport(newReports)
+  newEmails
   .toArray()
   .subscribe(
     (report) => res.status(202).send(report),

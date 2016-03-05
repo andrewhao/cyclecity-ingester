@@ -10,6 +10,7 @@ describe('emailReport()', () => {
       message: 'sent'
     }
     const stubSendgrid = {
+      Email: class {},
       send: (config, cb) => {
         cb(null, emailResponse);
       }
