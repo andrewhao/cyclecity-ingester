@@ -36,6 +36,7 @@
     "react-dom": "^0.14.3",
     "rx": "4.0.8",
     "rx-node": "1.0.2",
+    "sendgrid": "2.0.0",
     "stoplight": "0.0.7",
     "strava-v3": "1.10.0"
   },
