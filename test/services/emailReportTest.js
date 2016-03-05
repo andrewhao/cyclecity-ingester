@@ -3,25 +3,24 @@ import { expect } from 'chai';
 import { Observable } from 'rx';
 
 describe('emailReport()', () => {
-  it.only('sends mail to specified recipients', (done) => {
+  it('sends mail to specified recipients', (done) => {
     const report = { id: 1 }
     const input = Observable.just(report);
+    const emailResponse = {
+      message: 'sent'
+    }
     const stubSendgrid = {
       send: (config, cb) => {
-        const response = {
-          message: 'sent'
-        }
-        cb(null, response);
+        cb(null, emailResponse);
       }
     }
 
     emailReport(input, stubSendgrid)
     .catch(e => console.log(e))
     .subscribe(mailResult => {
-      console.log(mailResult)
-      //expect(mailResult.json).to.eql({ reportId: 1 });
-      //expect(mailResult.report).to.eql(report);
+      expect(mailResult.report).to.deep.eql(report);
+      expect(mailResult.json).to.deep.eql(emailResponse);
       done()
-    });
+    })
   });
 });
