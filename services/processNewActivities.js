@@ -17,6 +17,7 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
   })
   .flatMap(resultPair => {
     let [queryResult, activityId] = resultPair;
+    console.log(`Creating report for activity ${activityId}...`);
     if (queryResult === null) {
       return Observable.fromPromise(
         generateStoplightReport(activityId, strava)

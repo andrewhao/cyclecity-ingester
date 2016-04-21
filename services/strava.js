@@ -44,6 +44,7 @@ export default class StravaService {
   }
 
   activityStream(activityId) {
+    console.log(`Looking up Strava activity stream for ${activityId}...`);
     return new Promise((resolve, reject) => {
       const stream = strava.streams.activity({
         id: activityId,
