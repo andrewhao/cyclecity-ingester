@@ -24,5 +24,5 @@ export default function synchronizeActivity(activities$) {
   .flatMap(query => {
     return Observable.fromPromise(query)
   })
-  .tap(r => console.log(`saved: ${inspect(r)}`))
+  .tap(r => console.log(`Saved Activity: ${inspect(r)}`))
 };

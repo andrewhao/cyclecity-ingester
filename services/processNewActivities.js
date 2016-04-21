@@ -23,7 +23,8 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
       )
       .zip(Observable.just(activityId))
     } else {
-      console.log('Report exists. Skipping report generation...')
+      console.log(`Report for activity ${activityId} exists. Skipping report generation...`)
+      console.log('The found Report was:', queryResult)
       return Observable.empty()
     }
   })
