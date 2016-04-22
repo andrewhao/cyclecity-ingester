@@ -10,12 +10,13 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default class StravaService {
-  activityZipped(id) {
-    return this.activityStream(id).then((data) => {
+  activityZipped(activityId) {
+    return this.activityStream(activityId).then((data) => {
       const timeData = _.find(data, { type: 'time' }).data;
       const latlngData = _.find(data, { type: 'latlng' }).data;
       const distanceData = _.find(data, { type: 'distance' }).data;
       const velocityData = _.find(data, { type: 'velocity_smooth' }).data;
+      console.log(`activityZipped with activity ${activityId}`)
       return _.zipWith(timeData,
                        latlngData,
                        distanceData,
