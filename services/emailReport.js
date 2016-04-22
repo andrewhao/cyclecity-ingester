@@ -23,7 +23,10 @@ export default function emailReport(reports$, sendgridService=sendgridSvc) {
 
     const sendEmail = Observable.fromNodeCallback(sendgridService.send, sendgridService)
     return sendEmail(emailContents).zip(Observable.just(report))
-    .catch(e => console.error(e.stack))
+    .catch(e => {
+      console.error(e.stack);
+      return Observable.empty()
+    })
     .tap(v => console.log(`sendgrid response: ${inspect(v)}`));
   })
   .flatMap(response => response)
