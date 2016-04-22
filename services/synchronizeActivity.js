@@ -5,17 +5,30 @@ import { inspect } from 'util';
 /**
  * Synchronizes from Strava to our internal Activity db.
  */
-export default function synchronizeActivity(activities$) {
+export default function synchronizeActivity(activities$, strava) {
   return activities$
   .flatMap(result => result)
-  .map(activity => {
+  .tap(v => console.log('beepz'))
+  .take(1)
+  .flatMap(activity => {
+    return Observable.fromPromise(
+      strava.activityZipped(activity.id)
+      .then(stream => {
+        return { activity, stream }
+      })
+    );
+  })
+  .map((res) => {
+    const { activity, stream } = res;
+    console.log('stream2', stream[0]);
     return Activity.findOneAndUpdate({
       activityId: activity.id
     }, {
       name: activity.name,
       type: activity.type,
       commute: activity.commute,
-      raw: activity
+      activity: activity,
+      stream: stream,
     }, {
       upsert: true,
       new: true
