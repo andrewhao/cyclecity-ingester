@@ -30,8 +30,10 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
       return Observable.empty()
     }
   })
+  .tap(([report, activityId]) => console.log('generatedStoplight new', activityId, report))
   .flatMap(resultPair => {
     let [report, activityId] = resultPair;
+    console.log(`Adding new Report for ${activityId}`, report);
     return Observable.fromPromise(
       Report.findOneAndUpdate({
         activityId: activityId,
@@ -41,7 +43,7 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
         new: true,
         upsert: true
       })
-    )
+    );
   })
   .tap(res => console.log(`+ New Report created: ${res}`))
 };
