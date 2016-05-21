@@ -19,17 +19,18 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
     let [queryResult, activityId] = resultPair;
     console.log(`Creating report for activity ${activityId}...`);
     if (queryResult === null) {
-      console.log(`No report found for activity ${activityId}.`);
-      return Observable.fromPromise(
-        generateStoplightReport(activityId, strava)
-        .then(stoplightReport => {
-          console.log('boop', activityId);
-          return stoplightReport;
-        })
-        .catch(e => console.error(e))
-      )
+      console.log(`No report found for activity ${activityId}. Generating...`);
+      var generateReport = strava.activityZipped(activityId)
+      .then(zippedActivity => {
+          return generateStoplightReport(activityId, zippedActivity)
+      })
+      .catch(e => {
+        console.error(e);
+        return Observable.empty();
+      });
+
+      return Observable.fromPromise(generateReport)
       .zip(Observable.just(activityId))
-      .tap(v => console.log('beep', v))
     } else {
       console.log(`Report for activity ${activityId} exists. Skipping report generation...`)
       console.log('The found Report was:', queryResult)

@@ -40,7 +40,7 @@ router.delete('/reports', (req, res, next) => {
 
 router.post('/synchronization', (req, res, next) => {
   const activities$ = Observable.fromPromise(strava.activities())
-  const savedStream = synchronizeActivity(activities$)
+  const savedStream = synchronizeActivity(activities$, strava)
   const newReports = processNewActivities(savedStream, strava)
   const newEmails = emailReport(newReports)
   newEmails

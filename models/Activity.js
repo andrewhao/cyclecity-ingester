@@ -6,6 +6,8 @@ const activitySchema = Schema({
   raw: Object,
   name: String,
   type: String,
+  activity: Object,
+  stream: Array,
   commute: Boolean,
   timestamps: Date,
 });
