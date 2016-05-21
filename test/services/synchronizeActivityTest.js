@@ -2,7 +2,7 @@ import synchronizeActivity from '../../services/synchronizeActivity';
 import { Observable } from 'rx';
 import { expect } from 'chai';
 
-describe('synchronizeActivity()', () => {
+xdescribe('synchronizeActivity()', () => {
   it('synchronizes one new strava service activity', (done) => {
     let activityArray = [{
       id: 123,

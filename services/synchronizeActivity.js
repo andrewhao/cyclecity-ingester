@@ -7,9 +7,9 @@ import { inspect } from 'util';
  */
 export default function synchronizeActivity(activities$, strava) {
   return activities$
+  .tap(v => console.log('synchronizeActivity', v))
   .flatMap(result => result)
-  .tap(v => console.log('beepz'))
-  .take(1)
+  .concatMap(activity => Observable.just(activity).delay(5000))
   .flatMap(activity => {
     return Observable.fromPromise(
       strava.activityZipped(activity.id)
@@ -20,7 +20,8 @@ export default function synchronizeActivity(activities$, strava) {
   })
   .map((res) => {
     const { activity, stream } = res;
-    console.log('stream2', stream[0]);
+    console.log('activity', activity);
+    console.log('stream', stream);
     return Activity.findOneAndUpdate({
       activityId: activity.id
     }, {
