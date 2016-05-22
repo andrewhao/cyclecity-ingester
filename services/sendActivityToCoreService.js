@@ -11,12 +11,12 @@ const sendActivityToCoreService = (activities$, requestLib=rp) => {
       json: true
     })
     return Observable.fromPromise(performRequest)
-    .tap(v => console.log(`Performed HTTP request. Response: ${v}`))
-    .map(_ => activity)
     .catch(e => {
       console.error(`Error performing HTTP request: ${e}`);
-      return activity
-    });
+      return Observable.just('error');
+    })
+    .tap(v => console.log(`Performed HTTP request. Response: ${v}`))
+    .map(_ => activity)
   });
 };
 
