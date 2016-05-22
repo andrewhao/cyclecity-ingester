@@ -6,7 +6,7 @@ const sendActivityToCoreService = (activities$, requestLib=rp) => {
   .flatMap(activity => {
     const performRequest = requestLib({
       method: 'POST',
-      uri: process.env.CORE_ACTIVITY_API_ENDPOINT || 'https://velocitas-core.herokuapp.com/api/commutes/activities',
+      uri: process.env.CORE_ACTIVITY_API_ENDPOINT || 'https://velocitas-core.herokuapp.com/api/v1/commuting/activities',
       body: activity.toJSON,
       json: true
     })
