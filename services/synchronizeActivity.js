@@ -20,8 +20,6 @@ export default function synchronizeActivity(activities$, strava) {
   })
   .map((res) => {
     const { activity, stream } = res;
-    console.log('activity', activity);
-    console.log('stream', stream);
     return Activity.findOneAndUpdate({
       activityId: activity.id
     }, {
