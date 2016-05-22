@@ -8,6 +8,7 @@ import Report from '../models/Report';
 import findStoplights from '../services/findStoplights';
 import synchronizeActivity from '../services/synchronizeActivity';
 import processNewActivities from '../services/processNewActivities';
+import sendActivityToCoreService from '../services/sendActivityToCoreService';
 import emailReport from '../services/emailReport';
 import Promise from 'bluebird';
 import R from 'ramda';
@@ -44,6 +45,7 @@ router.post('/synchronization', (req, res, next) => {
     strava.activities,
     Observable.fromPromise,
     R.curry(synchronizeActivity)(R.__, strava),
+    sendActivityToCoreService,
     R.curry(processNewActivities)(R.__, strava),
     emailReport
   );
