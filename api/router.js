@@ -10,6 +10,7 @@ import synchronizeActivity from '../services/synchronizeActivity';
 import processNewActivities from '../services/processNewActivities';
 import emailReport from '../services/emailReport';
 import Promise from 'bluebird';
+import R from 'ramda';
 import { Observable } from 'rx';
 import { db } from  '../initializers/mongoose';
 
@@ -39,11 +40,14 @@ router.delete('/reports', (req, res, next) => {
 })
 
 router.post('/synchronization', (req, res, next) => {
-  const activities$ = Observable.fromPromise(strava.activities())
-  const savedStream = synchronizeActivity(activities$, strava)
-  const newReports = processNewActivities(savedStream, strava)
-  const newEmails = emailReport(newReports)
-  newEmails
+  var doSynchronization = R.pipe(
+    strava.activities,
+    Observable.fromPromise,
+    R.curry(synchronizeActivity)(R.__, strava),
+    R.curry(processNewActivities)(R.__, strava),
+    emailReport
+  );
+  doSynchronization()
   .toArray()
   .subscribe(
     (report) => res.status(202).send(report),
