@@ -45,8 +45,8 @@ router.post('/synchronization', (req, res, next) => {
     strava.activities,
     Observable.fromPromise,
     R.curry(synchronizeActivity)(R.__, strava),
-    sendActivityToCoreService,
     R.curry(processNewActivities)(R.__, strava),
+    sendActivityToCoreService,
     emailReport
   );
   doSynchronization()

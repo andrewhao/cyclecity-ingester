@@ -5,7 +5,7 @@ import { Observable } from 'rx';
 describe('emailReport()', () => {
   it('sends mail to specified recipients', (done) => {
     const report = { id: 1 }
-    const input = Observable.just(report);
+    const input = Observable.just({ report });
     const emailResponse = {
       message: 'sent'
     }
