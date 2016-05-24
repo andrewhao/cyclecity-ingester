@@ -16,7 +16,7 @@ export default function emailReport(reports$, sendgridService=sendgridSvc) {
 
   return reports$
   .tap(v => console.log(`Sending new report email...`))
-  .map(report => {
+  .map(({ report }) => {
     const emailContents = Object.assign({}, defaultEmail(report), { text: text(report) });
     console.log(`Email has contents: ${inspect(emailContents)}`);
     const email = new sendgridService.Email(emailContents)

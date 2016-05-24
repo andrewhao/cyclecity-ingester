@@ -52,9 +52,10 @@ describe('processNewActivities()', () => {
     processNewActivities(input, mockStrava, mockGenerateStoplightReport)
     .toArray()
     .subscribe(output => {
+      console.log(output)
       expect(output.length).to.eq(1);
-      expect(output[0].activityId).to.eq(1);
-      expect(output[0].report).to.eql(expectedOutput);
+      expect(output[0].activity.activityId).to.eq(1);
+      expect(output[0].report.report).to.eql(expectedOutput);
       done();
     })
   });
@@ -80,9 +81,9 @@ describe('processNewActivities()', () => {
     .toArray()
     .subscribe(output => {
       expect(output.length).to.eq(2);
-      expect(output[0].activityId).to.eq(1);
-      expect(output[0].report).to.eql(expectedOutput);
-      expect(output[1].activityId).to.eq(2);
+      expect(output[0].activity.activityId).to.eq(1);
+      expect(output[0].report.report).to.eql(expectedOutput);
+      expect(output[1].activity.activityId).to.eq(2);
       done();
     })
   });

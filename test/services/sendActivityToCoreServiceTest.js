@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import Promise from 'bluebird';
 import sendActivityToCoreService from '../../services/sendActivityToCoreService';
 import Activity from '../../models/Activity';
+import Report from '../../models/Report';
 
 describe('sendActivityToCoreService()', () => {
   beforeEach((done) => Activity.remove({}).then(() => done()))
@@ -14,6 +15,13 @@ describe('sendActivityToCoreService()', () => {
     activity: {},
     stream: [],
   };
+  const reportJSON = {
+    report: []
+  };
+
+  const activity = new Activity(activityJSON);
+  const report = new Report(reportJSON);
+  const activities$ = Observable.just({ activity, report });
 
   it('sends a POST request', function(done) {
     const mockRequestLib = function() {
@@ -22,12 +30,10 @@ describe('sendActivityToCoreService()', () => {
       });
     };
 
-    const activity = new Activity(activityJSON);
-    const activities$ = Observable.just(activity);
-
     sendActivityToCoreService(activities$, mockRequestLib)
     .subscribe(output => {
-      expect(output).to.eq(activity)
+      expect(output.activity).to.eq(activity)
+      expect(output.report).to.eq(report)
       expect(httpRequestPerformed.called).to.eq(true)
       done();
     });
@@ -40,12 +46,9 @@ describe('sendActivityToCoreService()', () => {
       });
     };
 
-    const activity = new Activity(activityJSON);
-    const activities$ = Observable.just(activity);
-
     sendActivityToCoreService(activities$, mockRequestLib)
     .subscribe(output => {
-      expect(output).to.eq(activity)
+      expect(output.activity).to.eq(activity)
       expect(httpRequestPerformed.called).to.eq(true)
       done();
     });

@@ -13,10 +13,11 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
     return Observable.fromPromise(
        Report.findOne({ activityId: activity.activityId })
       )
-      .zip(Observable.just(activity.activityId))
+      .zip(Observable.just(activity))
   })
   .flatMap(resultPair => {
-    let [queryResult, activityId] = resultPair;
+    let [queryResult, activity] = resultPair;
+    const activityId = activity.activityId;
     console.log(`Creating report for activity ${activityId}...`);
     if (queryResult === null) {
       console.log(`No report found for activity ${activityId}. Generating...`);
@@ -30,16 +31,17 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
       });
 
       return Observable.fromPromise(generateReport)
-      .zip(Observable.just(activityId))
+      .zip(Observable.just(activity))
     } else {
       console.log(`Report for activity ${activityId} exists. Skipping report generation...`)
       console.log('The found Report was:', queryResult)
       return Observable.empty()
     }
   })
-  .tap(([report, activityId]) => console.log('generatedStoplight new', activityId, report))
+  .tap(([report, activity]) => console.log('generatedStoplight new', activity.activityId, report))
   .flatMap(resultPair => {
-    let [report, activityId] = resultPair;
+    let [report, activity] = resultPair;
+    const activityId = activity.activityId;
     console.log(`Adding new Report for ${activityId}`, report);
     return Observable.fromPromise(
       Report.findOneAndUpdate({
@@ -50,7 +52,7 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
         new: true,
         upsert: true
       })
-    );
+    ).map(report => ({report, activity}));
   })
   .tap(res => console.log(`+ New Report created: ${res}`))
 };
