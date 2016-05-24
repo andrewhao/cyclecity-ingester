@@ -27,9 +27,9 @@ export default class StravaService {
                            latlng: latlng,
                            distance: dist,
                            velocity: vel
-                         }
+                         };
                        });
-    })
+    });
   }
 
   activities() {
