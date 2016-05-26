@@ -7,16 +7,23 @@ import { inspect } from 'util';
  */
 export default function synchronizeActivity(activities$, strava) {
   return activities$
-  .tap(v => console.log('synchronizeActivity', v))
   .flatMap(result => result)
-  .concatMap(activity => Observable.just(activity).delay(5000))
+  .filter(activity => {
+    return activity.type === 'Ride';
+  })
+  .tap(v => console.log('synchronizeActivity', v))
+  .concatMap(activity => Observable.just(activity).delay(10000))
   .flatMap(activity => {
     return Observable.fromPromise(
       strava.activityZipped(activity.id)
       .then(stream => {
         return { activity, stream }
       })
-    );
+    )
+    .catch(v => {
+      console.error('synchronizeActivity', v, v.stack);
+      return Observable.empty();
+    })
   })
   .map((res) => {
     const { activity, stream } = res;
@@ -36,5 +43,5 @@ export default function synchronizeActivity(activities$, strava) {
   .flatMap(query => {
     return Observable.fromPromise(query)
   })
-  .tap(r => console.log(`Saved Activity: ${inspect(r)}`))
+  .tap(r => console.log(`Saved Activity: ${r.activity.id}`))
 };

@@ -1,4 +1,4 @@
-import strava from 'strava-v3';
+import stravaLib from 'strava-v3';
 import util from 'util';
 import Promise from 'bluebird';
 import _ from 'lodash';
@@ -10,8 +10,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default class StravaService {
-  activityZipped(activityId) {
-    return this.activityStream(activityId).then((data) => {
+  activityZipped(activityId, strava = stravaLib) {
+    return this.activityStream(activityId, strava)
+    .then((data) => {
+      console.log(data);
       const timeData = _.find(data, { type: 'time' }).data;
       const latlngData = _.find(data, { type: 'latlng' }).data;
       const distanceData = _.find(data, { type: 'distance' }).data;
@@ -32,19 +34,16 @@ export default class StravaService {
     });
   }
 
-  activities() {
+  activities(strava = stravaLib) {
     return new Promise((resolve, reject) => {
       strava.athlete.listActivities({}, (err, data) => {
-        if (!err) {
-          resolve(data);
-        } else {
-          reject(err);
-        }
+        if (!err) { resolve(data); }
+        else { reject(err); }
       });
-    });
+    })
   }
 
-  activityStream(activityId) {
+  activityStream(activityId, strava = stravaLib) {
     console.log(`Looking up Strava activity stream for ${activityId}...`);
     return new Promise((resolve, reject) => {
       const stream = strava.streams.activity({
@@ -53,7 +52,10 @@ export default class StravaService {
         resolution: 'high'
       }, (err, data) => {
         if (!err) { resolve(data); }
-        else { reject(err) }
+        else {
+          console.error('Error', err)
+          reject(err)
+        }
       });
     });
   }
