@@ -36,7 +36,7 @@ export default class StravaService {
 
   activities(strava = stravaLib) {
     return new Promise((resolve, reject) => {
-      strava.athlete.listActivities({}, (err, data) => {
+      strava.athlete.listActivities({ per_page: 200 }, (err, data) => {
         if (!err) { resolve(data); }
         else { reject(err); }
       });
