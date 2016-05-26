@@ -8,12 +8,19 @@ import { inspect } from 'util';
 export default function synchronizeActivity(activities$, strava) {
   return activities$
   .flatMap(result => result)
-  .filter(activity => {
-    return activity.type === 'Ride';
-  })
-  .tap(v => console.log('synchronizeActivity', v))
-  .concatMap(activity => Observable.just(activity).delay(10000))
+  .filter(activity => activity.type === 'Ride')
+  .tap(v => console.log('[synchronizeActivity] Fetching stream for activity', v.id))
   .flatMap(activity => {
+    return Observable.fromPromise(
+      Activity.findOne({activityId: activity.id})
+    )
+    .map(result => {
+      return { result, activity }
+    })
+  })
+  .filter(({result, activity}) => result === null)
+  .concatMap(activity => Observable.just(activity).delay(7000))
+  .flatMap(({activity}) => {
     return Observable.fromPromise(
       strava.activityZipped(activity.id)
       .then(stream => {
@@ -21,7 +28,7 @@ export default function synchronizeActivity(activities$, strava) {
       })
     )
     .catch(v => {
-      console.error('synchronizeActivity', v, v.stack);
+      console.error('synchronizeActivity Error:', v, v.stack);
       return Observable.empty();
     })
   })
@@ -43,5 +50,5 @@ export default function synchronizeActivity(activities$, strava) {
   .flatMap(query => {
     return Observable.fromPromise(query)
   })
-  .tap(r => console.log(`Saved Activity: ${r.activity.id}`))
+  .tap(r => console.log(`[synchronizeActivity]: Saved Activity: ${r.activity.id}`))
 };

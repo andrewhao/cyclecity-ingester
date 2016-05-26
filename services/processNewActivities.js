@@ -34,11 +34,10 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
       .zip(Observable.just(activity))
     } else {
       console.log(`Report for activity ${activityId} exists. Skipping report generation...`)
-      console.log('The found Report was:', queryResult)
       return Observable.empty()
     }
   })
-  .tap(([report, activity]) => console.log('generatedStoplight new', activity.activityId, report))
+  .tap(([report, activity]) => console.log('generatedStoplight new', activity.activityId))
   .flatMap(resultPair => {
     let [report, activity] = resultPair;
     const activityId = activity.activityId;
@@ -54,5 +53,5 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
       })
     ).map(report => ({report, activity}));
   })
-  .tap(res => console.log(`+ New Report created: ${res}`))
+  .tap(res => console.log(`+ New Report created: ${res.activity.id}`))
 };

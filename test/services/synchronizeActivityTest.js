@@ -1,8 +1,23 @@
 import synchronizeActivity from '../../services/synchronizeActivity';
+import Activity from '../../models/Activity';
 import { Observable } from 'rx';
 import { expect } from 'chai';
 
 describe('synchronizeActivity()', () => {
+  it('skips if an activity exists already', (done) => {
+    let activity = new Activity({ activityId: 123 });
+    activity.save().then(savedActivity => {
+      const input$ = Observable.just([{ id: 123 }])
+      synchronizeActivity(input$)
+      .toArray()
+      .subscribe((out) => {
+        console.log(out);
+        expect(out).to.eql([]);
+        done()
+      });
+    });
+  });
+
   xit('synchronizes one new strava service activity', (done) => {
     let activityArray = [{
       id: 122,
