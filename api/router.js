@@ -9,6 +9,7 @@ import findStoplights from '../services/findStoplights';
 import synchronizeActivity from '../services/synchronizeActivity';
 import processNewActivities from '../services/processNewActivities';
 import sendActivityToCoreService from '../services/sendActivityToCoreService';
+import fetchUsersFromIdentityService from '../services/fetchUsersFromIdentityService';
 import emailReport from '../services/emailReport';
 import Promise from 'bluebird';
 import R from 'ramda';
@@ -42,16 +43,19 @@ router.delete('/reports', (req, res, next) => {
 
 router.post('/synchronization', (req, res, next) => {
   const stravaAccessToken = process.env.STRAVA_ACCESS_TOKEN;
-  var doSynchronization = R.pipe(
-    R.always(stravaAccessToken),
-    strava.activities,
-    Observable.fromPromise,
-    R.curry(synchronizeActivity)(R.__, stravaAccessToken, strava),
-    R.curry(processNewActivities)(R.__, stravaAccessToken, strava),
-    sendActivityToCoreService,
-    emailReport
-  );
-  doSynchronization()
+
+  return fetchUsersFromIdentityService()
+  .concatMap(({ email, strava_access_token }) => {
+    return R.pipe(
+      R.always(strava_access_token),
+      strava.activities,
+      Observable.fromPromise,
+      R.curry(synchronizeActivity)(R.__, stravaAccessToken, strava),
+      R.curry(processNewActivities)(R.__, stravaAccessToken, strava),
+      sendActivityToCoreService,
+      emailReport
+    )();
+  })
   .toArray()
   .subscribe(
     (report) => res.status(202).send(report),

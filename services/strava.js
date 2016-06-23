@@ -34,8 +34,8 @@ export default class StravaService {
   }
 
   activities(accessToken, strava = stravaLib) {
+    console.log(`accessToken: ${accessToken}`);
     return new Promise((resolve, reject) => {
-      console.log(`accessToken: ${accessToken}`);
       strava.athlete.listActivities({
         per_page: 200,
         access_token: accessToken,
