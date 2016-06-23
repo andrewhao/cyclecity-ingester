@@ -15,10 +15,10 @@ const fetchUsersFromIdentityService = (requestLib=rp) => {
 
   return Observable.fromPromise(performRequest)
   .catch(e => {
-    console.error(`Error performing HTTP request:`, e);
+    console.error(`[fetchUsersFromIdentityService] Error performing HTTP request:`, e);
     return Observable.just({ users: [] });
   })
-  .tap(r => console.log(`Performed HTTP request. Response: `, r))
+  .tap(r => console.log(`[fetchUsersFromIdentityService] Performed HTTP request. Response: `, r))
   .flatMap(jsonBody => Observable.fromArray(jsonBody['users']));
 };
 

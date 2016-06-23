@@ -34,7 +34,7 @@ export default class StravaService {
   }
 
   activities(accessToken, strava = stravaLib) {
-    console.log(`accessToken: ${accessToken}`);
+    console.log(`[StravaService] making listActivities call with accessToken: ${accessToken}`);
     return new Promise((resolve, reject) => {
       strava.athlete.listActivities({
         per_page: 200,
@@ -47,7 +47,7 @@ export default class StravaService {
   }
 
   activityStream(activityId, accessToken, strava = stravaLib) {
-    console.log(`Looking up Strava activity stream for ${activityId}...`);
+    console.log(`Looking up Strava activity stream for ${activityId} for user ${accessToken}`);
     return new Promise((resolve, reject) => {
       const stream = strava.streams.activity({
         id: activityId,
