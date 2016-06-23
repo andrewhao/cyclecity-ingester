@@ -41,11 +41,13 @@ router.delete('/reports', (req, res, next) => {
 })
 
 router.post('/synchronization', (req, res, next) => {
+  const stravaAccessToken = process.env.STRAVA_ACCESS_TOKEN;
   var doSynchronization = R.pipe(
+    R.always(stravaAccessToken),
     strava.activities,
     Observable.fromPromise,
-    R.curry(synchronizeActivity)(R.__, strava),
-    R.curry(processNewActivities)(R.__, strava),
+    R.curry(synchronizeActivity)(R.__, stravaAccessToken, strava),
+    R.curry(processNewActivities)(R.__, stravaAccessToken, strava),
     sendActivityToCoreService,
     emailReport
   );

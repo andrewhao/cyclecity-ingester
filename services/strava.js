@@ -10,10 +10,9 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export default class StravaService {
-  activityZipped(activityId, strava = stravaLib) {
-    return this.activityStream(activityId, strava)
+  activityZipped(activityId, accessToken, strava = stravaLib) {
+    return this.activityStream(activityId, accessToken, strava)
     .then((data) => {
-      console.log(data);
       const timeData = _.find(data, { type: 'time' }).data;
       const latlngData = _.find(data, { type: 'latlng' }).data;
       const distanceData = _.find(data, { type: 'distance' }).data;
@@ -34,22 +33,27 @@ export default class StravaService {
     });
   }
 
-  activities(strava = stravaLib) {
+  activities(accessToken, strava = stravaLib) {
     return new Promise((resolve, reject) => {
-      strava.athlete.listActivities({ per_page: 200 }, (err, data) => {
+      console.log(`accessToken: ${accessToken}`);
+      strava.athlete.listActivities({
+        per_page: 200,
+        access_token: accessToken,
+      }, (err, data) => {
         if (!err) { resolve(data); }
         else { reject(err); }
       });
     })
   }
 
-  activityStream(activityId, strava = stravaLib) {
+  activityStream(activityId, accessToken, strava = stravaLib) {
     console.log(`Looking up Strava activity stream for ${activityId}...`);
     return new Promise((resolve, reject) => {
       const stream = strava.streams.activity({
         id: activityId,
         types: 'latlng,time,velocity_smooth',
-        resolution: 'high'
+        resolution: 'high',
+        access_token: accessToken,
       }, (err, data) => {
         if (!err) { resolve(data); }
         else {

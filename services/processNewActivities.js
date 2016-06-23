@@ -6,7 +6,7 @@ import { inspect } from 'util';
 import StravaService from '../services/strava';
 import generateStoplightReportService from '../services/generateStoplightReport';
 
-export default function processNewActivities(savedActivitiesStream, strava, generateStoplightReport=generateStoplightReportService) {
+export default function processNewActivities(savedActivitiesStream, accessToken, strava, generateStoplightReport=generateStoplightReportService) {
   return savedActivitiesStream
   .tap(v => console.log(`Processing activity ${v.activityId}...`))
   .flatMap(activity => {
@@ -21,7 +21,7 @@ export default function processNewActivities(savedActivitiesStream, strava, gene
     console.log(`Creating report for activity ${activityId}...`);
     if (queryResult === null) {
       console.log(`No report found for activity ${activityId}. Generating...`);
-      var generateReport = strava.activityZipped(activityId)
+      var generateReport = strava.activityZipped(activityId, accessToken)
       .then(zippedActivity => {
           return generateStoplightReport(activityId, zippedActivity)
       })
