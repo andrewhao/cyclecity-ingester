@@ -2,6 +2,10 @@
 
 A cycle commute report ingester.
 
+[![Code
+Climate](https://codeclimate.com/github/andrewhao/cyclecity-ingester/badges/gpa.svg)](https://codeclimate.com/github/andrewhao/cyclecity-ingester)
+[![CircleCI](https://circleci.com/gh/andrewhao/cyclecity-ingester.svg?style=svg)](https://circleci.com/gh/andrewhao/cyclecity-ingester)
+
 ## Pseudocode
 
 1. for each strava account
