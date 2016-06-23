@@ -16,7 +16,7 @@ describe('emailReport()', () => {
       }
     }
 
-    emailReport(input, stubSendgrid)
+    emailReport(input, stubSendgrid, true)
     .catch(e => console.log(e))
     .subscribe(mailResult => {
       expect(mailResult.report).to.deep.eql(report);
