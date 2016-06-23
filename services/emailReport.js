@@ -14,6 +14,8 @@ export default function emailReport(reports$, sendgridService=sendgridSvc) {
     return JSON.stringify(report)
   }
 
+  if (process.env.EMAIL_ENABLED !== 'true') { return reports$; }
+
   return reports$
   .tap(v => console.log(`Sending new report email...`))
   .map(({ report }) => {

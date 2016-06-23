@@ -42,16 +42,14 @@ router.delete('/reports', (req, res, next) => {
 })
 
 router.post('/synchronization', (req, res, next) => {
-  const stravaAccessToken = process.env.STRAVA_ACCESS_TOKEN;
-
   return fetchUsersFromIdentityService()
   .concatMap(({ email, strava_access_token }) => {
     return R.pipe(
       R.always(strava_access_token),
       strava.activities,
       Observable.fromPromise,
-      R.curry(synchronizeActivity)(R.__, stravaAccessToken, strava),
-      R.curry(processNewActivities)(R.__, stravaAccessToken, strava),
+      R.curry(synchronizeActivity)(R.__, strava_access_token, strava),
+      R.curry(processNewActivities)(R.__, strava_access_token, strava),
       sendActivityToCoreService,
       emailReport
     )();
