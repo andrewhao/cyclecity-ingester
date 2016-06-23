@@ -13,7 +13,6 @@ export default class StravaService {
   activityZipped(activityId, accessToken, strava = stravaLib) {
     return this.activityStream(activityId, accessToken, strava)
     .then((data) => {
-      console.log(data);
       const timeData = _.find(data, { type: 'time' }).data;
       const latlngData = _.find(data, { type: 'latlng' }).data;
       const distanceData = _.find(data, { type: 'distance' }).data;
