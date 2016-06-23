@@ -4,14 +4,15 @@ import { Observable } from 'rx';
 import { expect } from 'chai';
 
 describe('synchronizeActivity()', () => {
+  const stravaToken = 'abcdefg';
+
   it('skips if an activity exists already', (done) => {
     let activity = new Activity({ activityId: 123 });
     activity.save().then(savedActivity => {
       const input$ = Observable.just([{ id: 123 }])
-      synchronizeActivity(input$)
+      synchronizeActivity(input$, stravaToken)
       .toArray()
       .subscribe((out) => {
-        console.log(out);
         expect(out).to.eql([]);
         done()
       });
@@ -38,7 +39,7 @@ describe('synchronizeActivity()', () => {
     };
 
     const activities$ = Observable.just(activityArray);
-    synchronizeActivity(activities$, mockStrava)
+    synchronizeActivity(activities$, stravaToken, mockStrava)
     .subscribe((out) => {
       expect(out.get('activityId')).to.eq(123);
       done();
@@ -59,7 +60,7 @@ describe('synchronizeActivity()', () => {
     }]
 
     const activities$ = Observable.just(activityArray);
-    synchronizeActivity(activities$)
+    synchronizeActivity(activities$, stravaToken)
     .toArray()
     .subscribe((out) => {
       expect(out[0].get('activityId')).to.eq(123);

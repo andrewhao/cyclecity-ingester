@@ -1,6 +1,6 @@
-# Velocitas Reporter
+# Cyclecity ingester
 
-A cycle commute report digester.
+A cycle commute report ingester.
 
 ## Pseudocode
 

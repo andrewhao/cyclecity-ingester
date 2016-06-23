@@ -5,7 +5,7 @@ import { inspect } from 'util';
 /**
  * Synchronizes from Strava to our internal Activity db.
  */
-export default function synchronizeActivity(activities$, strava) {
+export default function synchronizeActivity(activities$, accessToken, strava) {
   return activities$
   .flatMap(result => result)
   .filter(activity => activity.type === 'Ride')
@@ -22,13 +22,13 @@ export default function synchronizeActivity(activities$, strava) {
   .concatMap(activity => Observable.just(activity).delay(7000))
   .flatMap(({activity}) => {
     return Observable.fromPromise(
-      strava.activityZipped(activity.id)
+      strava.activityZipped(activity.id, accessToken)
       .then(stream => {
         return { activity, stream }
       })
     )
     .catch(v => {
-      console.error('synchronizeActivity Error:', v, v.stack);
+      console.error('[synchronizeActivity] Error:', v, v.stack);
       return Observable.empty();
     })
   })

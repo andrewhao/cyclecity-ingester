@@ -10,6 +10,7 @@ describe('processNewActivities()', () => {
 
   const first = { activityId: 1 };
   const second = { activityId: 2 };
+  const stravaToken = 'abcdefg';
 
   const event1 = {
     time: 0,
@@ -49,7 +50,7 @@ describe('processNewActivities()', () => {
   it('takes activities from the source stream and saves a stoplight report', (done) => {
     let input = Observable.just(first)
 
-    processNewActivities(input, mockStrava, mockGenerateStoplightReport)
+    processNewActivities(input, stravaToken, mockStrava, mockGenerateStoplightReport)
     .toArray()
     .subscribe(output => {
       console.log(output)
@@ -65,7 +66,7 @@ describe('processNewActivities()', () => {
     .save()
     .then((report) => {
       const input = Observable.just(first)
-      processNewActivities(input, mockStrava, mockGenerateStoplightReport)
+      processNewActivities(input, stravaToken, mockStrava, mockGenerateStoplightReport)
       .toArray()
       .subscribe(v => {
         expect(v.length).to.eq(0)
@@ -77,7 +78,7 @@ describe('processNewActivities()', () => {
   it('processes multiple reports', (done) => {
     let input = Observable.fromArray([first, second])
 
-    processNewActivities(input, mockStrava, mockGenerateStoplightReport)
+    processNewActivities(input, stravaToken, mockStrava, mockGenerateStoplightReport)
     .toArray()
     .subscribe(output => {
       expect(output.length).to.eq(2);

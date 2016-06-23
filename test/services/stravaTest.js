@@ -9,7 +9,10 @@ describe('StravaService', () => {
   const activity2 = {
     type: 'Run'
   };
+  const accessToken = 'abcdefg';
+
   const listActivities = (data, cb) => {
+    expect(data.access_token).to.eql(accessToken)
     cb(null, [activity1, activity2]);
   };
   const mockStrava = {
@@ -22,7 +25,7 @@ describe('StravaService', () => {
 
   describe('activities()', () => {
     it('returns a list of activities', (done) => {
-      subject.activities(mockStrava)
+      subject.activities(accessToken, mockStrava)
       .then(output => {
         expect(output).to.eql([activity1, activity2]);
         done()
