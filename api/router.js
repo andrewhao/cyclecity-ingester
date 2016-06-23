@@ -24,23 +24,6 @@ router.get('/', (req, res, next) => {
   res.send('API up!');
 });
 
-router.get('/activities', (req, res, next) => {
-  Activity.find({})
-  .sort({ activityId: 'desc' })
-  .then((activities) => res.send(activities))
-});
-
-router.get('/reports', (req, res, next) => {
-  Report.find({})
-  .sort({ activityId: 'desc' })
-  .then((reports) => res.send(reports))
-});
-
-router.delete('/reports', (req, res, next) => {
-  Report.remove({})
-  .then(out => res.status(202).send(out))
-})
-
 router.post('/synchronization', (req, res, next) => {
   return fetchUsersFromIdentityService()
   .concatMap(({ email, strava_access_token }) => {
@@ -59,44 +42,6 @@ router.post('/synchronization', (req, res, next) => {
     (report) => res.status(202).send(report),
     (err) => res.status(500).send(err)
   )
-});
-
-router.get('/activities/:id/stoplights', (req, res, next) => {
-  strava.activityZipped(req.params.id).then((zipped) => {
-    return findStoplights(zipped)
-  })
-  .then((stoplights) => {
-    res.send(stoplights);
-  })
-  .catch((err) => res.send(err));
-});
-
-router.get('/activities/:id/stream', (req, res, next) => {
-  // - Hit Strava API
-  // - Query for list of commutes
-  // - Save new commutes (id, streamdata) in db
-  const id = req.params.id
-  strava.activityZipped(id).then((data) => {
-    res.send(data);
-  })
-  .catch((err) => res.send(err));
-});
-
-router.get('/stravaActivities', (req, res, next) => {
-  strava.activities().then((data) => {
-    res.send(data);
-  });
-});
-
-router.get('/ingest', (req, res, next) => {
-  // - For commutes without reports
-  // - generate report
-  // - save report
-  console.log("Ingesting...");
-});
-
-router.get('/send', (req, res, next) => {
-  // - email reports that have not been emailed
 });
 
 export default router;
